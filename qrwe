@@ -1,0 +1,356 @@
+
+
+
+
+
+
+
+
+
+ <div class="overview">
+ 
+<span class="profilepicholder"><a href="new-picture.php?user_id=<?php echo $user_id; ?>" target="_blank"><img class="profilepic" src="images/_<?php echo $domain; ?>/members/<?php
+
+echo $user_id . "." . $photoExt;
+?>" /></a></span>
+
+<table class='profileTable' style='text-align: left; margin: 0;'>
+
+<?php
+	if ($_SESSION['normalNumbers'] == 1) {
+		
+	$query = "select max(memberno) from users";
+		try
+		{
+			$result = $pdo3->prepare("$query");
+			$result->execute();
+		}
+		catch (PDOException $e)
+		{
+				$error = 'Error fetching user: ' . $e->getMessage();
+				echo $error;
+				exit();
+		}
+	
+		$row = $result->fetch();
+			$nextMemberNo = $row['0'] + 1;
+
+?>
+
+ <tr>
+  <td><strong><?php echo $lang['member-number']; ?></strong></td>
+  <td>
+   <input type="number" lang="nb" id="memberno" class="twoDigit memberGroup" name="memberno" value="<?php echo $memberno; ?>" readonly /> <?php echo $lang['or']; ?>  
+   <select name="memberNumber" id="memberNumber" class="memberGroup" style="width: 60px;">
+    <option value=""></option>
+<?php
+	$sql = "SELECT memberno FROM users";
+		try
+		{
+			$result = $pdo3->prepare("$sql");
+			$result->execute();
+		}
+		catch (PDOException $e)
+		{
+				$error = 'Error fetching user: ' . $e->getMessage();
+				echo $error;
+				exit();
+		}
+	
+		while ($row = $result->fetch()) {
+   		$memberNumbers[] = $row['memberno'];
+	}
+	
+	for ($i = 0; $i < $nextMemberNo; ++$i) {
+		
+		if (!in_array($i, $memberNumbers)) {
+				echo "<option value='$i'>$i</option>";
+    	}
+	}
+				echo "<option value='$nextMemberNo'>$nextMemberNo</option>";
+
+?>
+  </select>
+  
+<script>
+
+$('#memberNumber').on('click keypress keyup blur', function() {
+  if($(this).val() != ''){
+    $('#memberno').val('');
+  }
+});
+
+$('#memberno').on('click keypress keyup blur', function() {
+  if($(this).val() != ''){
+    $('#memberNumber').val('');
+  }
+});
+
+
+</script>
+
+  </td>
+ </tr>
+
+<?php } ?>
+
+ <tr>
+  <td><strong><?php echo $lang['member-firstnames']; ?></strong></td>
+  <td><input type="text" name="first_name" value="<?php echo $first_name; ?>" /></td>
+ </tr>
+ <tr>
+  <td><strong><?php echo $lang['member-lastnames']; ?></strong></td>
+  <td><input type="text" name="last_name" value="<?php echo $last_name; ?>" /></td>
+ </tr>
+ <tr>
+  <td><strong><?php echo $lang['member-gender']; ?></strong></td>
+  <td>
+     <select name="gender">
+      <?php if ($gender == NULL) { ?><option value=""><?php echo $lang['global-choose']; ?>:</option> <?php } ?>
+	  <option value="Male" <?php if ($gender == 'Male') {echo "selected";} ?>><?php echo $lang['member-male']; ?></option>
+	  <option value="Female" <?php if ($gender == 'Female') {echo "selected";} ?>><?php echo $lang['member-female']; ?></option>
+     </select>
+  </td>
+ </tr>
+ <tr>
+  <td><strong><?php echo $lang['colour']; ?></strong></td>
+  <td>
+       <select name="starCat" id="starCat">
+       
+<?php 	if ($starColour == "") {
+			echo "<option value='$starCat'>{$lang['colour']}</option>";
+		} else {
+			echo "<option value='$starCat'>$starCat - $starColour</option>";
+		}
+        
+		echo "<option value='0'></option>";
+		echo "<option value='1'>1 - {$lang['yellow']}</option>";
+		echo "<option value='2'>2 - {$lang['black']}</option>";
+		echo "<option value='3'>3 - {$lang['green']}</option>";
+		echo "<option value='4'>4 - {$lang['red']}</option>";
+		echo "<option value='5'>5 - {$lang['purple']}</option>";
+		echo "<option value='6'>6 - {$lang['blue']}</option>";
+ 
+?>
+
+		
+	   </select><br />
+  </td>
+ </tr>
+ <tr>
+  <td><strong><?php echo $lang['user-type']; ?></strong></td>
+  <td>
+          <select name="userGroup" id="userGroup">
+        <option value='<?php echo $userGroup; ?>'><?php echo $userGroup . ' - ' . $groupName; ?></option>
+<?php
+      
+      	// Query to look up usergroups
+      	
+      	if ($_SESSION['userGroup'] < 2) {
+			$selectGroups = "SELECT userGroup, groupName, groupDesc FROM usergroups ORDER by userGroup ASC";
+		} else {
+			$selectGroups = "SELECT userGroup, groupName, groupDesc FROM usergroups WHERE userGroup > 1 ORDER by userGroup ASC";
+		}
+		try
+		{
+			$result = $pdo3->prepare("$selectGroups");
+			$result->execute();
+		}
+		catch (PDOException $e)
+		{
+				$error = 'Error fetching user: ' . $e->getMessage();
+				echo $error;
+				exit();
+		}
+	
+		while ($group = $result->fetch()) {
+			if ($group['userGroup'] != $userGroup) {
+				$group_row = sprintf("<option value='%d'>%d - %s</option>",
+	  								 $group['userGroup'], $group['userGroup'], $group['groupName']);
+	  			echo $group_row;
+  			}
+  		}
+?>
+	   </select>
+  </td>
+ </tr>
+ <tr>
+  <td><strong><?php echo $lang['member-usergroup']; ?></strong></td>
+  <td>
+          <select name="usergroup2" id="usergroup2">
+          
+<?php
+
+		$selectGroups = "SELECT name FROM usergroups2 WHERE id = $usergroup2";
+		try
+		{
+			$result = $pdo3->prepare("$selectGroups");
+			$result->execute();
+		}
+		catch (PDOException $e)
+		{
+				$error = 'Error fetching user: ' . $e->getMessage();
+				echo $error;
+				exit();
+		}
+	
+		$row = $result->fetch();
+			$usergroup2name = $row['name'];
+
+
+?>
+        <option value='<?php echo $usergroup2; ?>'><?php echo $usergroup2 . ' - ' . $usergroup2name; ?></option>
+<?php
+      
+      	// Query to look up usergroups
+		$selectGroups = "SELECT id, name FROM usergroups2 WHERE id <> $usergroup2 ORDER by id ASC";
+		try
+		{
+			$result = $pdo3->prepare("$selectGroups");
+			$result->execute();
+		}
+		catch (PDOException $e)
+		{
+				$error = 'Error fetching user: ' . $e->getMessage();
+				echo $error;
+				exit();
+		}
+	
+		while ($group = $result->fetch()) {
+			if ($group['id'] != $usergroups2) {
+				$group_row = sprintf("<option value='%d'>%d - %s</option>",
+	  								 $group['id'], $group['id'], $group['name']);
+	  			echo $group_row;
+  			}
+  		}
+?>
+	   </select>
+  </td>
+ </tr>
+<?php if ($_SESSION['puestosOrNot'] == 1) { ?>
+
+	<tr id="expiryBox">
+	 <td>
+    <strong><?php echo $lang['access-level']; ?></strong>
+     </td>
+     <td>
+    <input type="checkbox" name="workStation[]" value="1" style="width: 12px;" <?php if ($workStation == 1 || $workStation == 6 || $workStation == 11 || $workStation == 16) {echo "checked";} if ($_SESSION['userGroup'] != 1) { echo " disabled"; } ?>><?php echo $lang['reception']; ?></input><br />
+    <input type="checkbox" name="workStation[]" value="5" style="width: 12px;" <?php if ($workStation == 5 || $workStation == 6 || $workStation == 15 || $workStation == 16 ) {echo "checked";} if ($_SESSION['userGroup'] != 1) { echo " disabled"; } ?>><?php echo $lang['bar']; ?></input><br />
+    <input type="checkbox" name="workStation[]" value="10" style="width: 12px;" <?php if ($workStation == 10 || $workStation == 11 || $workStation == 15 || $workStation == 16 ) {echo "checked";} if ($_SESSION['userGroup'] != 1) { echo " disabled"; } ?>><?php echo $lang['dispensary']; ?><br />
+    </td>
+    </tr>
+   
+<?php } if ($_SESSION['negcredit'] == 0) { ?>
+
+ <tr>
+  <td><strong><?php echo $lang['dispense-without-credit']; ?></strong></td>
+  <td>
+     <select name="creditEligible" id="creditEligible" style='width: 60px;'>
+	  <option value="0" <?php if ($creditEligible == 0) {echo "selected";} ?>><?php echo $lang['global-no']; ?></option>
+	  <option value="1" <?php if ($creditEligible == 1) {echo "selected";} ?>><?php echo $lang['global-yes']; ?></option>
+     </select>
+     <span id='maxCreditHolder'>
+     Hasta: <strong>-</strong><input type="text" id="maxCredit" name="maxCredit" class='twoDigit' value="<?php echo $maxCredit; ?>" />
+     </span>
+  </td>
+ </tr>
+ 
+<?php } ?>
+
+ <tr>
+  <td><strong><?php echo $lang['interviewed-member']; ?></strong></td>
+  <td>
+     <select name="interview">
+	  <option value="0" <?php if ($interview == 0) {echo "selected";} ?>><?php echo $lang['global-no']; ?></option>
+	  <option value="1" <?php if ($interview == 1) {echo "selected";} ?>><?php echo $lang['global-yes']; ?></option>
+     </select>
+  </td>
+ </tr>
+ 
+<?php if ($_SESSION['membershipFees'] == 1) { ?>
+<?php if (($_SESSION['exentoset'] == 0 && $_SESSION['userGroup'] == 1) || $_SESSION['exentoset'] == 1) { ?>
+
+
+ <tr>
+  <td><strong><?php echo $lang['exempt-from-fee']; ?></strong></td>
+  <td>
+     <select name="exento" id="exento">
+	  <option value="0" <?php if ($exento != 1) {echo "selected";} ?>><?php echo $lang['global-no']; ?></option>
+	  <option value="1" <?php if ($exento == 1) {echo "selected";} ?>><?php echo $lang['global-yes']; ?></option>
+     </select>
+  </td>
+ </tr>
+
+ 
+ 
+<?php } } ?>
+
+</table>
+</span>
+ </div> <!-- END OVERVIEW -->
+  <div class="clearfloat"></div><br />
+  <div id="profileWrapper">
+ <div id="detailedinfo">
+  <div id="leftpane">
+<strong><?php echo $lang['member-personal']; ?></strong><br />
+<input type="text" placeholder="<?php echo $lang['member-nationality']; ?>" name="nationality" value="<?php echo $nationality; ?>" /><br />
+<input type="number" lang="nb" class="twoDigit" placeholder="dd" maxlength="2" name="day" value="<?php echo $day; ?>" />
+     <input type="number" lang="nb" class="twoDigit" placeholder="mm" maxlength="2" name="month" value="<?php echo $month; ?>" />
+     <input type="number" lang="nb" class="fourDigit" placeholder="<?php echo $lang['member-yyyy']; ?>" maxlength="4" name="year" value="<?php echo $year; ?>" /><br />
+<input type="text" name="dni" id="dni" placeholder="<?php echo $lang['dni-or-passport']; ?>" value="<?php echo $dni; ?>" /><br /><br />
+<strong><?php echo $lang['member-usage']; ?></strong><br />
+     <select name="usageType">
+      <?php if ($usageType == NULL) { ?><option value=""><?php echo $lang['global-select']; ?>:</option> <?php } ?>
+	  <option value="0" <?php if ($usageType == '0') {echo "selected";} ?>><?php echo $lang['member-recreational']; ?></option>
+	  <option value="1" <?php if ($usageType == '1') {echo "selected";} ?>><?php echo $lang['member-medicinal']; ?></option>
+     </select>
+     <br />
+     <input type="text" class="twoDigit" name="mconsumption" value="<?php echo $mconsumption; ?>" /> <?php echo $lang['member-consumptiong']; ?><br />
+
+  </div> <!-- END LEFTPANE -->
+  <div id="rightpane">
+
+<strong><?php echo $lang['member-contactdetails']; ?></strong><br />
+<input type="text" placeholder="<?php echo $lang['member-telephone']; ?>" name="telephone" value="<?php echo $telephone; ?>" /><br />
+<input type="text" placeholder="E-mail" name="email" value="<?php echo $email; ?>" /><br /><br />
+
+     <input type="text" name="street" placeholder="<?php echo $lang['member-street']; ?>" value="<?php echo $street; ?>" />
+     <input type="number" lang="nb" class="twoDigit" placeholder="No." name="streetnumber" value="<?php echo $streetnumber; ?>" />
+     <input type="text" class="twoDigit" placeholder="<?php echo $lang['member-flat']; ?>" name="flat" value="<?php echo $flat; ?>" /><br />
+     <input type="text" class="fourDigit" placeholder="<?php echo $lang['member-postcode']; ?>" name="postcode" value="<?php echo $postcode; ?>" />
+     <input type="text" placeholder="<?php echo $lang['member-city']; ?>" name="city" value="<?php echo $city; ?>" />
+     <input type="text" placeholder="<?php echo $lang['member-country']; ?>" name="country" value="<?php echo $country; ?>" /><br /><br />
+
+  </div> <!-- END RIGHTPANE -->
+ <div class="clearfloat"></div>
+ 
+<center><strong><?php echo $lang['chip']; ?></strong><br />
+<input maxlength="30" type="text" name="cardid" value="<?php echo $cardid; ?>" /><br />
+<input maxlength="30" type="text" name="cardid2" value="<?php echo $cardid2; ?>" /><br />
+<input maxlength="30" type="text" name="cardid3" value="<?php echo $cardid3; ?>" /><br />
+</center>
+ 
+ </div> <!-- END DETAILEDINFO -->
+ <div id="statistics">
+  <?php if ($_SESSION['userGroup'] < 2) { ?>
+  <center><a href="edit-discounts.php?user_id=<?php echo $user_id; ?>" class="cta"><?php echo $lang['discounts']; ?></a></center>
+  <?php } ?>
+
+
+<center>
+ </div>
+ <div class="clearfloat"></div><br />
+  </div> <!-- END PROFILEWRAPPER -->
+ <br /><button class='oneClick' name='oneClick' type="submit"><?php echo $lang['global-savechanges']; ?></button>
+
+ <?php	if ($source == 'not_approved') { ?>
+<input type="hidden" name="source" value="<?php echo $source; ?>" />
+<input type="hidden" name="user_id" value="<?php echo $user_id; ?>" />
+<?php	} ?>
+   </form>
+
+<?php displayFooter(); ?>
+
+
+<!-- When script submits, check to see if password+salt matches pw+salt in db. If yes, leave. If no, change. Hepp! 
+Conversely: Leave Password out of the form, and replace with a link 'change password' -->

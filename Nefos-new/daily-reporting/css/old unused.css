@@ -1,0 +1,109 @@
+#pday #main input.fourDigit {
+	width: 66px;
+}
+/* open and close day */
+
+#pday #main .fakelabel {
+	width: 105px;
+}
+
+#pday #main input {
+	text-align: right;
+}
+
+#pday.step2 #main .fakelabel {
+	width: 190px;
+}
+#pday.step2 #main .fakelabel.short {
+	width: 70px;
+}
+
+#pday table tr:hover {
+	background-color: white;
+}
+
+#pday.product2 table tr:hover {
+	background-color: #a80082;
+}
+#pday.product2 #registerForm {
+	display: inline-block;
+	border-radius: 2px;
+	background-color: #5aa242;
+	color: white;
+	padding: 10px;
+	margin: 8px;
+	vertical-align: top;
+	text-align: center;
+}
+
+
+#pday.step2 {
+	text-align: center;
+}
+
+#pday.product #main .fakelabel {
+	width: 145px;
+}
+#pday.product2 #main .fakelabel {
+	width: 145px;
+}
+#pday.product2 #main {
+	text-align: center;
+}
+#pday.product2 #registerForm {
+	text-align: left;
+}
+
+
+
+#pday button {
+	margin-left: 30px;
+	margin-bottom: 10px;
+}
+
+
+#pday.product .actionbox {
+	display: inline-block;
+	border-radius: 2px;
+	background-color: #5aa242;
+	color: white;
+	padding: 10px;
+	margin: 8px;
+	vertical-align: top;
+	text-align: left;
+	font-size: 15px;
+	line-height: 1.4em;
+}
+#pday.product .actionbox a {
+	color: white;
+}
+
+#pday.product .actionbox a:hover {
+	text-decoration: underline;
+}
+#pday.product .actionbox h3 {
+	color: yellow;
+	text-align: center;
+}
+
+
+#pday .infobox {
+	border-radius: 2px;
+	background-color: #5aa242;
+	color: white;
+	padding: 10px;
+	padding-bottom: 5px;
+	margin: 8px;
+	display: inline-block;
+	vertical-align: top;
+}
+
+#pday.auto button {
+	width: auto;
+	border: 0;
+	height: auto;
+}
+
+#pday.auto button:hover {
+	cursor: pointer;
+}

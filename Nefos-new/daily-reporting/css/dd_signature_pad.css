@@ -1,0 +1,81 @@
+/**
+* HTML5 Signature Software
+* Copyright (c) 2010 - 2013 Dream Designs (www.dreamdesignsweb.com)
+* Under GPL (ww.dreamdesignsweb.com/license) licenses.
+* All scripts & codes in this file was created by Dream Designs @ www.dreamdesignsweb.com
+* ----------------------------------------------------
+* Last Mod: Sep 11 2013 | version 1.4
+*/
+/**
+* Signature pad wrapper
+*/
+#dd_signaturePadWrapper {
+	position: relative;
+	float: left;
+	width: 430px;
+}
+/**
+* Canvas element
+*/
+#dd_canvas:hover {
+	cursor: url('images/dd_signature_pad/pencil.cur'), 
+			url('../images/dd_signature_pad/pencil.cur'), 
+			auto;
+}
+#dd_canvas:active {
+	cursor: url('images/dd_signature_pad/pencil.cur'), 
+			url('../images/dd_signature_pad/pencil.cur'), 
+			auto;
+}
+/**
+* Tool wrapper
+*/
+#dd_signatureToolWrapper img {
+	border: none;
+}
+/**
+* Pencil Picker icon
+*/
+#dd_tool_pencilPicker:hover {
+	cursor: pointer;
+	opacity: 0.8;
+}
+/**
+* Color picker icon
+*/
+#dd_tool_colorPicker:hover {
+	cursor: pointer;
+	opacity: 0.8;
+}
+/**
+* Undo icon
+*/
+#dd_tool_undo:hover {
+	cursor: pointer;
+	opacity: 0.8;
+}
+/**
+* Erasor icon
+*/
+#dd_tool_erasor:hover {
+	cursor: pointer;
+	opacity: 0.8;
+}
+/**
+* Save Button
+*/
+#dd_saveButton {
+	position: relative;
+	display: inline-block;
+	padding: 2px 6px 2px 6px;
+	margin: 10px 0px 0px 0px;
+	color: #ffffff;
+	background-color: #6699cc;
+	border: solid 1px #808080;
+	clear: both;
+	border-radius: 4pt;
+}
+#dd_saveButton:hover {
+	cursor: pointer;
+	background-color: #99cc00;
+}

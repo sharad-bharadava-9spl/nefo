@@ -1,0 +1,14 @@
+/**
+* HTML5 Signature Software
+* Copyright (c) 2010 - 2013 Dream Designs (www.dreamdesignsweb.com)
+* Under GPL (ww.dreamdesignsweb.com/license) licenses.
+* All scripts & codes in this file was created by Dream Designs @ www.dreamdesignsweb.com
+* ----------------------------------------------------
+* Last Mod: Sep 11 2013 | version 1.4
+*/
+/**
+* Signature pad wrapper
+*/
+#dd_signaturePadWrapper {
+	position: relative;
+}

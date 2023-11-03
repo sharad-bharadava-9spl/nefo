@@ -1,0 +1,399 @@
+<?php
+	// file updated by konstant for Task-15007167 on 31-12-2021
+	require_once 'cOnfig/connection.php';
+	require_once 'cOnfig/view.php';
+	require_once 'cOnfig/authenticate.php';
+	require_once 'cOnfig/languages/common.php';
+	
+	session_start();
+	$accessLevel = '1';
+	
+	// Authenticate & authorize
+	authorizeUser($accessLevel);
+	// Check if new Filter value was submitted, and assign query variable accordingly
+	if (isset($_POST['filter'])) {
+				
+		$filterVar = $_POST['filter'];
+		
+		if ($filterVar == 100) {
+			
+			$limitVar = "LIMIT 100";
+			$optionList = "<option value='$filterVar'>{$lang['last']} 100</option>
+			<option value='250'>{$lang['last']} 250</option>
+			<option value='500'>{$lang['last']} 500</option>";
+			
+		} else if ($filterVar == 250) {
+			
+			$limitVar = "LIMIT 250";
+			$optionList = "<option value='$filterVar'>{$lang['last']} 250</option>
+			<option value='100'>{$lang['last']} 100</option>
+			<option value='500'>{$lang['last']} 500</option>";
+			
+		} else if ($filterVar == 500) {
+			
+			$limitVar = "LIMIT 500";
+			$optionList = "<option value='$filterVar'>{$lang['last']} 500</option>
+			<option value='100'>{$lang['last']} 100</option>
+			<option value='250'>{$lang['last']} 250</option>";
+			
+		} else {
+			
+			// Grab month and year number
+			$month = substr($filterVar, 0, strrpos($filterVar, '-'));	
+			$year = substr($filterVar, strrpos($filterVar, '-') + 1);
+			
+			$timeLimit = "WHERE MONTH(logtime) = $month AND YEAR(logtime) = $year";
+			
+			$optionList = "<option value='filterVar'>$filterVar</option>
+				<option value='100'>{$lang['last']} 100</option>
+				<option value='250'>{$lang['last']} 250</option>
+				<option value='500'>{$lang['last']} 500</option>";		
+		}
+			
+	} else {
+		
+		$limitVar = "LIMIT 100";
+		
+		$optionList = "<option value=''>{$lang['filter']}</option>
+			<option value='100'>{$lang['last']} 100</option>
+			<option value='250'>{$lang['last']} 250</option>
+			<option value='500'>{$lang['last']} 500</option>";		
+	}
+	
+	// Check if 'entre fechas' was utilised
+	if (isset($_POST['untilDate'])) {
+		
+		$limitVar = "";
+		
+		$fromDate = date("Y-m-d", strtotime($_POST['fromDate']));
+		$untilDate = date("Y-m-d", strtotime($_POST['untilDate']));
+		
+		$timeLimit = "WHERE DATE(logtime) BETWEEN DATE('$fromDate') AND DATE('$untilDate')";
+		$limitVar = "";
+			
+	}
+	
+	
+	// Query to look up log items
+	$selectLog = "SELECT id, logtype, logtime, user_id, operator, amount, oldCredit, newCredit, oldExpiry, newExpiry, comment FROM log $timeLimit ORDER by logtime DESC $limitVar";
+		try
+		{
+			$results = $pdo3->prepare("$selectLog");
+			$results->execute();
+		}
+		catch (PDOException $e)
+		{
+				$error = 'Error fetching user: ' . $e->getMessage();
+				echo $error;
+				exit();
+		}
+	
+	// Create month-by-month split
+	$findStartDate = "SELECT logtime FROM log ORDER BY logtime ASC LIMIT 1";
+		try
+		{
+			$result = $pdo3->prepare("$findStartDate");
+			$result->execute();
+		}
+		catch (PDOException $e)
+		{
+				$error = 'Error fetching user: ' . $e->getMessage();
+				echo $error;
+				exit();
+		}
+	
+		$row = $result->fetch();
+		$startDate = date('01-m-Y', strtotime($row['logtime']));
+		$endDate = date('01-m-Y');
+		$endDateShort = date('m-Y', strtotime($endDate));
+		
+		
+	if ($endDateShort != $filterVar) {
+		$optionList .= "<option value='$endDateShort'>$endDateShort</option>";
+	}
+	
+	$genDateFull = date('01-m-Y', strtotime($endDate));
+	$genDate = date('m-Y', strtotime($genDateFull));
+	
+	while (strtotime($genDateFull) > strtotime($startDate)) {
+		
+		$genDateFull = date('01-m-Y', strtotime("$genDateFull - 1 month"));
+		$genDate = date('m-Y', strtotime($genDateFull));
+		
+		// Exclude option if already selected
+		if ($genDate != $filterVar) {
+			$optionList .= "<option value='$genDate'>$genDate</option>";
+		}
+	}
+	
+	$deleteDonationScript = <<<EOD
+	
+	  $( function() {
+	    $( "#datepicker" ).datepicker({
+			dateFormat: "dd-mm-yy"
+	    });
+	    $( "#exceldatepicker" ).datepicker({
+				dateFormat: "dd-mm-yy"
+	    });
+	  });
+	  $( function() {
+	    $( "#datepicker2" ).datepicker({
+			dateFormat: "dd-mm-yy"
+	    });
+	   $( "#exceldatepicker2" ).datepicker({
+				dateFormat: "dd-mm-yy"
+	    });
+	  });	    
+	  
+	    $(document).ready(function() {
+		  
+			$('#cloneTable').width($('#mainTable').width());
+			
+			
+			$('#mainTable').tablesorter({
+				usNumberFormat: true,
+				headers: {
+					0: {
+						sorter: "dates"
+					},
+					4: {
+						sorter: "currency"
+					},
+					5: {
+						sorter: "currency"
+					},
+					6: {
+						sorter: "currency"
+					}
+				}
+			}); 
+		
+		$(window).resize(function() {
+			$('#cloneTable').width($('#mainTable').width());
+		});
+		});
+		
+EOD;
+	pageStart($lang['log'], NULL, $deleteDonationScript, "pexpenses", "admin", $lang['log'], $_SESSION['successMessage'], $_SESSION['errorMessage']);
+	
+	
+?>
+<center>
+	<div id="filterbox">
+		   <div id="mainboxheader">
+ 					<?php echo $lang['filter']; ?> </div>
+			 <div class="boxcontent">	
+		        <form action='' method='POST' style='margin-top: 3px;'>
+			     <select id='filter' name='filter' class="defaultinput" onchange='this.form.submit()'>
+			      <?php echo $optionList; ?>
+				 </select>
+		        </form>
+		        <form action='' method='POST'>
+		<?php
+			if (isset($_POST['fromDate'])) {
+				
+				echo <<<EOD
+				 <input type="text" id="datepicker" name="fromDate" autocomplete="off" class="sixDigit defaultinput" value="{$_POST['fromDate']}" />
+				 <input type="text" id="datepicker2" name="untilDate" autocomplete="off" class="sixDigit defaultinput" value="{$_POST['untilDate']}" onchange='this.form.submit()' />
+				 <button type="submit" class='cta2' style='display: inline-block; width: 40px;'>OK</button>
+		EOD;
+				
+			} else {
+				
+				echo <<<EOD
+				 <input type="text" id="datepicker" name="fromDate" autocomplete="off" class="sixDigit defaultinput" placeholder="{$lang['from-date']}" />
+				 <input type="text" id="datepicker2" name="untilDate" autocomplete="off" class="sixDigit defaultinput" placeholder="{$lang['to-date']}" onchange='this.form.submit()' />
+				 <button type="submit" class='cta2' style='display: inline-block; width: 40px;'>OK</button>
+		EOD;
+			}
+		?>
+		        </form>
+		        </div>
+		      </div>
+		   </center>   <br> </br> 
+		  <center> <a href="javascript:void(0);" id="openCOnfirm" onClick=""><img src="images/excel-new.png"/></a></center><br> </br> 
+	 <table class="default" id='mainTable'>
+	  <thead>
+	   <tr style='cursor: pointer;'>
+	    <th><?php echo $lang['global-time']; ?>
+	    	
+	    </th>
+	    <th><?php echo $lang['action']; ?></th>
+	    <th><?php echo $lang['operator']; ?></th>
+	    <th><?php echo $lang['global-member']; ?></th>
+	    <th><?php echo $lang['global-amount']; ?></th>
+	    <th><?php echo $lang['donation-creditbefore']; ?></th>
+	    <th><?php echo $lang['donation-creditafter']; ?></th>
+	    <th><?php echo $lang['old-expiry']; ?></th>
+	    <th><?php echo $lang['new-expiry']; ?></th>
+	    <th></th>
+	   </tr>
+	  </thead>
+	  <tbody>
+	  <?php
+		while ($logItem = $results->fetch()) {
+	
+	
+	$id = $logItem['id'];
+	$logtype = $logItem['logtype'];
+	$formattedDate = date("d M H:i", strtotime($logItem['logtime'] . "+$offsetSec seconds"));
+	$user_id = $logItem['user_id'];
+	$operator = $logItem['operator'];
+	$operatorID = $logItem['operator'];
+	
+	if ($logItem['comment'] != '') {
+		
+		$commentRead = "
+		                <img src='images/comments.png' id='comment$id' /><div id='helpBox$id' class='helpBox'>{$logItem['comment']}</div>
+		                <script>
+		                  	$('#comment$id').on({
+						 		'mouseover' : function() {
+								 	$('#helpBox$id').css('display', 'block');
+						  		},
+						  		'mouseout' : function() {
+								 	$('#helpBox$id').css('display', 'none');
+							  	}
+						  	});
+						</script>
+		                ";
+		
+	} else {
+		
+		$commentRead = "";
+		
+	}
+	
+	
+	//if ($logItem['amount'] == 0) {
+	//	$amount = '';
+	//} else {
+		$amount = number_format($logItem['amount'],2) . "<span class='smallerfont'>{$_SESSION['currencyoperator']}</span>";
+	//}
+	
+	//if ($logItem['oldCredit'] > 0 || $logItem['newCredit'] > 0) {
+		$oldCredit = number_format($logItem['oldCredit'],2) . "<span class='smallerfont'>{$_SESSION['currencyoperator']}</span>";
+		if ($logtype == 14) {
+			$newCredit = '';			
+		} else {
+			$newCredit = number_format($logItem['newCredit'],2) . "<span class='smallerfont'>{$_SESSION['currencyoperator']}</span>";
+		}
+	//} else {
+	//	$oldCredit = '';
+	//	$newCredit = '';
+	//}
+	
+	if ($logItem['newExpiry'] != '') {
+		$oldExpiry = date('d M Y', strtotime($logItem['oldExpiry']));
+		$newExpiry = date('d M Y', strtotime($logItem['newExpiry']));
+	} else {
+		$oldExpiry = '';
+		$newExpiry = '';
+	}
+	
+	$member = getUser($user_id);
+	$operator = getUser($operator);
+	
+	// Look up logtype
+	if ($_SESSION['lang'] == 'es') {
+		
+		$selectLogType = "SELECT namees, descriptiones FROM logtypes WHERE id = $logtype";
+		try
+		{
+			$result = $pdo3->prepare("$selectLogType");
+			$result->execute();
+		}
+		catch (PDOException $e)
+		{
+				$error = 'Error fetching user: ' . $e->getMessage();
+				echo $error;
+				exit();
+		}
+	
+		$row = $result->fetch();
+			$logType = $row['namees'];
+			$description = $row['descriptiones'];
+						
+	} else {
+		
+		$selectLogType = "SELECT nameen, descriptionen FROM logtypes WHERE id = $logtype";
+		try
+		{
+			$result = $pdo3->prepare("$selectLogType");
+			$result->execute();
+		}
+		catch (PDOException $e)
+		{
+				$error = 'Error fetching user: ' . $e->getMessage();
+				echo $error;
+				exit();
+		}
+	
+		$row = $result->fetch();
+			$logType = $row['nameen'];
+			$description = $row['descriptionen'];
+			
+	}
+	
+	
+	
+	$expense_row =	sprintf("
+  	  <tr>
+  	   <td class='left'>%s</td>
+  	   <td class='left'>%s</td>
+  	   <td class='left clickableRow' href='worker-log.php?operator=$operatorID'>%s</td>
+  	   <td class='left clickableRow' href='member-log.php?user_id=$user_id'>%s</td>
+  	   <td style='text-align: right;'>%s</td>
+  	   <td style='text-align: right;'>%s</td>
+  	   <td style='text-align: right;'>%s</td>
+  	   <td class='centered'>%s</td>
+  	   <td class='centered'>%s</td>
+  	   <td class='centered'><span class='relativeitem'>$commentRead</span></td>
+	  </tr>",
+	  $formattedDate, $logType, $operator, $member, $amount, $oldCredit, $newCredit, $oldExpiry, $newExpiry
+	  );
+	  echo $expense_row;
+  }
+?>
+	 </tbody>
+	 </table>
+	 
+<div  class="actionbox-npr" id = "dialog-3" title = "<?php echo $lang['log']; ?>">
+	
+	<div class='boxcomtemt'>
+		<p>Export excel between time ranges</p><br>
+		<input type="text" id="exceldatepicker" name="fromDate" autocomplete="off" class="sixDigit defaultinput" placeholder="<?php echo $lang['from-date'] ?>" />
+		 <input type="text" id="exceldatepicker2" name="untilDate" autocomplete="off" class="sixDigit defaultinput" placeholder="<?php echo $lang['to-date'] ?>"/>
+			<button class='cta1' id="fullList">Ok</button>
+		
+	</div>
+</div> 
+<?php  displayFooter(); ?>
+
+<script type="text/javascript">
+	$( "#dialog-3" ).dialog({
+	    autoOpen: false, 
+	    hide: "puff",
+	    show : "slide",
+	     position: {
+	       my: "top top",
+	       at: "top top"
+	    }      
+	 });
+	 $( "#openCOnfirm" ).click(function() {
+	    $( "#dialog-3" ).dialog( "open" );
+	 });
+
+	 $("#fullList").click(function(){
+	    $("#load").show();
+	    $( "#dialog-3" ).dialog( "close" );
+
+	    var fromDate = $("#exceldatepicker").val();
+	    var untilDate = $("#exceldatepicker2").val();
+	    var url = 'log-report.php?fromDate='+fromDate+'&untilDate='+untilDate+'&count=0&totalCount=0';
+	    window.open(url, "Log Report","height=300,width=300,modal=yes,alwaysRaised=yes");
+	    setTimeout(function () {
+	        $("#load").hide();
+	    }, 2000);    
+	 });
+
+</script>

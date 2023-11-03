@@ -1,0 +1,33 @@
+RewriteEngine On
+
+RewriteRule ^homecategoryList?$ categoryList.php
+RewriteRule ^productList?$ productList.php
+RewriteRule ^login?$ loginApi.php
+RewriteRule ^addCart?$ addCart.php
+RewriteRule ^deleteCart?$ deleteCart.php
+RewriteRule ^viewCart?$ viewCart.php
+RewriteRule ^updateCart?$ updateCart.php
+RewriteRule ^pushNotification?$ pushNotification.php
+RewriteRule ^userProfile?$ userProfile.php
+RewriteRule ^notificationView?$ notificationView.php
+RewriteRule ^donationHistory?$ donationHistory.php
+RewriteRule ^orderPlace?$ orderPlace.php
+RewriteRule ^viewOrder?$ viewOrder.php
+RewriteRule ^orderDetail?$ orderDetail.php
+RewriteRule ^orderFilter?$ orderFilter.php
+RewriteRule ^addDonation?$ addDonation.php
+RewriteRule ^donationFilter?$ donationFilter.php
+RewriteRule ^addMacaddress?$ addMacaddress.php
+RewriteRule ^macaddressDetail?$ macaddressDetail.php
+RewriteRule ^deleteMacaddress?$ deleteMacaddress.php
+RewriteRule ^editMacaddress?$ editMacaddress.php
+RewriteRule ^cancelOrder?$ cancelOrder.php
+RewriteRule ^deleteNotification?$ deleteNotification.php
+RewriteRule ^undoCategory?$ undoCategory.php
+RewriteRule ^userLoginSwitch?$ userLoginSwitch.php
+RewriteRule ^getStripekey?$ getStripekey.php
+RewriteRule ^changePassword?$ changePassword.php
+RewriteRule ^clubList?$ clubList.php
+RewriteRule ^viewcart_new?$ viewcart_new.php
+RewriteRule ^memberRegister?$ memberRegister.php
+RewriteRule ^memberLogin?$ memberLogin.php

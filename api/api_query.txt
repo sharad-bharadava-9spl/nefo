@@ -1,0 +1,168 @@
+// 17-06-2020
+
+// ccs_masterdb db changes for login api task
+
+CREATE TABLE `app_access` ( `id` INT(11) NOT NULL AUTO_INCREMENT , `user_id` INT(11) NULL DEFAULT NULL , `member_number` VARCHAR(30) NULL , `email` VARCHAR(50) NULL , `password` VARCHAR(50) NULL , `domain` VARCHAR(50) NULL , `allow_access` ENUM('0','1') NOT NULL DEFAULT '0' , `created_at` DATETIME NULL DEFAULT NULL , `updated_at` DATETIME NULL DEFAULT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;
+
+
+// ccs_demo (club db)  changes for login api
+
+CREATE TABLE `cartmobile` (
+  `id` int(11) NOT NULL,
+  `user_id` varchar(255) DEFAULT NULL,
+  `product_id` varchar(255) DEFAULT NULL,
+  `purchase_id` varchar(255) DEFAULT NULL,
+  `medDiscount` varchar(255) DEFAULT NULL,
+  `product_name` varchar(255) DEFAULT NULL,
+  `product_description` text,
+  `product_medicaldescription` text,
+  `product_image` varchar(255) DEFAULT NULL,
+  `product_price` varchar(255) DEFAULT NULL,
+  `product_qty` varchar(255) DEFAULT NULL,
+  `flower_type` varchar(255) DEFAULT NULL,
+  `category_type` varchar(255) DEFAULT NULL,
+  `category_name` varchar(255) DEFAULT NULL,
+  `category_id` varchar(255) DEFAULT NULL,
+  `extra_priceval` varchar(255) DEFAULT NULL,
+  `extra_price` varchar(255) DEFAULT NULL,
+  `cart_discount` varchar(255) DEFAULT NULL,
+  `originaldiscount_value` varchar(255) DEFAULT NULL,
+  `grow_type` varchar(255) DEFAULT NULL,
+  `breed2` varchar(255) DEFAULT NULL,
+  `procart_cnt` varchar(255) DEFAULT NULL,
+  `cat_undo_num` varchar(255) DEFAULT NULL,
+  `is_driectprice` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+ALTER TABLE `cartmobile`
+  ADD PRIMARY KEY (`id`);
+
+
+ALTER TABLE `cartmobile`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+
+  CREATE TABLE `pushnotification` (
+  `id` int(11) NOT NULL,
+  `fcm_key` varchar(255) DEFAULT NULL,
+  `user_id` varchar(255) DEFAULT NULL,
+  `notification_status` enum('unread','read') DEFAULT NULL COMMENT '''read'',''unread''',
+  `title` varchar(255) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `image` varchar(255) DEFAULT NULL,
+  `unique_num` varchar(255) NOT NULL,
+  `screen_no` varchar(255) DEFAULT NULL,
+  `create_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `status` enum('0','1') NOT NULL DEFAULT '0' COMMENT '0-success,1-fail'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+ALTER TABLE `pushnotification`
+  ADD PRIMARY KEY (`id`);
+
+
+  ALTER TABLE `pushnotification`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=351;
+
+
+ALTER TABLE `users` ADD `login_code` VARCHAR(20) NULL DEFAULT NULL AFTER `usergroup2`, ADD `device_id` VARCHAR(50) NULL DEFAULT NULL AFTER `login_code`, ADD `platform` VARCHAR(20) NULL DEFAULT NULL AFTER `device_id`, ADD `fcm_key` VARCHAR(255) NULL DEFAULT NULL AFTER `platform`;
+
+
+ALTER TABLE `categories` ADD `cat_selected_icon` VARCHAR(255) NULL DEFAULT NULL AFTER `icon`;
+
+
+ALTER TABLE `donations` ADD `transaction_id` VARCHAR(255) NULL DEFAULT NULL AFTER `donationid`;
+
+ALTER TABLE `donations` ADD `donation_status` VARCHAR(255) NULL DEFAULT NULL AFTER `donationTime`;
+
+ALTER TABLE `sales` ADD `orderForm` ENUM('0','1') NOT NULL DEFAULT '0' COMMENT '\'0 = web app\', \'1 = mobile order\'' AFTER `puesto`, ADD `order_id` INT(6) NULL DEFAULT NULL AFTER `orderForm`, ADD `payment_mode` VARCHAR(255) NULL DEFAULT NULL AFTER `order_id`, ADD `user_credit` VARCHAR(255) NULL DEFAULT NULL AFTER `payment_mode`, ADD `user_grand_total` VARCHAR(255) NULL DEFAULT NULL AFTER `user_credit`, ADD `user_discount` VARCHAR(255) NULL DEFAULT NULL AFTER `user_grand_total`, ADD `payment_transction_id` VARCHAR(255) NULL DEFAULT NULL AFTER `user_discount`, ADD `order_status` ENUM('1', '2', '3', '4') NULL DEFAULT NULL COMMENT '\'1= Ordered\',\'2=Prepared\',\'3=Picked\',\'4=\'Cancel\' ' AFTER `payment_transction_id`, ADD `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `order_status`, ADD `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`;
+
+
+ALTER TABLE `salesdetails` ADD `category_type` VARCHAR(255) NULL DEFAULT NULL AFTER `realQuantity`, ADD `category_name` VARCHAR(255) NULL DEFAULT NULL AFTER `category_type`, ADD `extra_priceval` VARCHAR(255) NULL DEFAULT NULL AFTER `category_name`, ADD `extra_price` VARCHAR(255) NULL DEFAULT NULL AFTER `extra_priceval`, ADD `grow_type` VARCHAR(255) NULL DEFAULT NULL AFTER `extra_price`, ADD `breed2` VARCHAR(255) NULL DEFAULT NULL AFTER `grow_type`, ADD `product_name` VARCHAR(255) NULL DEFAULT NULL AFTER `breed2`, ADD `product_description` VARCHAR(255) NULL DEFAULT NULL AFTER `product_name`, ADD `product_medicaldescription` VARCHAR(255) NULL DEFAULT NULL AFTER `product_description`, ADD `product_image` VARCHAR(255) NULL DEFAULT NULL AFTER `product_medicaldescription`, ADD `product_price` VARCHAR(255) NULL DEFAULT NULL AFTER `product_image`, ADD `product_qty` VARCHAR(255) NULL DEFAULT NULL AFTER `product_price`, ADD `flower_type` VARCHAR(255) NULL DEFAULT NULL AFTER `product_qty`, ADD `user_discountorignal` VARCHAR(255) NULL DEFAULT NULL AFTER `flower_type`, ADD `user_discount_price` VARCHAR(255) NULL DEFAULT NULL AFTER `user_discountorignal`;
+
+
+ALTER TABLE `systemsettings` ADD `topcredit_option` VARCHAR(50) NULL DEFAULT NULL AFTER `workertracking`, ADD `preorder_option` VARCHAR(50) NULL DEFAULT NULL AFTER `topcredit_option`, ADD `showprice_option` VARCHAR(50) NULL DEFAULT NULL AFTER `preorder_option`, ADD `stripe_payment_Testkey` VARCHAR(100) NULL DEFAULT NULL AFTER `showprice_option`, ADD `stripe_payment_Livekey` VARCHAR(100) NULL DEFAULT NULL AFTER `stripe_payment_Testkey`, ADD `stripekey_status` VARCHAR(10) NULL DEFAULT NULL COMMENT '\'0 = test key\', \'1 = live key\' ' AFTER `stripe_payment_Livekey`;
+
+
+CREATE TABLE `mobile_order` (
+  `id` int(11) NOT NULL,
+  `user_id` varchar(255) DEFAULT NULL,
+  `order_id` int(6) UNSIGNED ZEROFILL DEFAULT NULL,
+  `payment_mode` varchar(255) DEFAULT NULL,
+  `total_price` varchar(255) DEFAULT NULL,
+  `user_credit` varchar(255) DEFAULT NULL,
+  `user_discount` varchar(255) DEFAULT NULL,
+  `user_discountorignal` varchar(255) DEFAULT NULL,
+  `user_discount_price` varchar(255) DEFAULT NULL,
+  `user_grand_total` varchar(255) DEFAULT NULL,
+  `product_id` varchar(255) DEFAULT NULL,
+  `product_name` varchar(255) DEFAULT NULL,
+  `product_description` text DEFAULT NULL,
+  `product_medicaldescription` text DEFAULT NULL,
+  `product_image` varchar(255) DEFAULT NULL,
+  `product_price` varchar(255) DEFAULT NULL,
+  `product_qty` varchar(255) DEFAULT NULL,
+  `flower_type` varchar(255) DEFAULT NULL,
+  `category_type` varchar(255) DEFAULT NULL,
+  `category_name` varchar(255) DEFAULT NULL,
+  `category_id` varchar(255) DEFAULT NULL,
+  `extra_priceval` varchar(255) DEFAULT NULL,
+  `extra_price` varchar(255) DEFAULT NULL,
+  `grow_type` varchar(255) DEFAULT NULL,
+  `breed2` varchar(255) DEFAULT NULL,
+  `creditBefore` varchar(255) DEFAULT NULL,
+  `payment_transction_id` varchar(255) DEFAULT NULL,
+  `creditAfter` varchar(255) DEFAULT NULL,
+  `procart_cnt` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+CREATE TABLE `moblie_macaddress` (
+  `id` int(11) NOT NULL,
+  `domain_id` varchar(255) DEFAULT NULL,
+  `user_id` varchar(255) DEFAULT NULL,
+  `domain_name` varchar(255) DEFAULT NULL,
+  `mac_address` varchar(255) DEFAULT NULL,
+  `status` enum('0','1','2') DEFAULT NULL COMMENT '0-Active, 1-Inactive, 2-Deleted',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+
+CREATE TABLE `payment_mobile` (
+  `id` int(11) NOT NULL,
+  `transaction_id` varchar(255) DEFAULT NULL,
+  `payment_transction_id` varchar(255) DEFAULT NULL,
+  `user_id` varchar(255) DEFAULT NULL,
+  `user_name` varchar(255) DEFAULT NULL,
+  `user_lname` varchar(255) DEFAULT NULL,
+  `user_email` varchar(255) DEFAULT NULL,
+  `payment_mode` varchar(255) DEFAULT NULL,
+  `amount` varchar(255) DEFAULT NULL,
+  `order_date` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+ALTER TABLE `mobile_order`
+  ADD PRIMARY KEY (`id`);
+
+
+  ALTER TABLE `moblie_macaddress`
+  ADD PRIMARY KEY (`id`);
+
+  ALTER TABLE `payment_mobile`
+  ADD PRIMARY KEY (`id`);
+
+  ALTER TABLE `mobile_order`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+  ALTER TABLE `moblie_macaddress`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+  ALTER TABLE `payment_mobile`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;

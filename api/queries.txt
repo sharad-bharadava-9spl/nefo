@@ -1,0 +1,29 @@
+CREATE TABLE `savesales_details` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `purchase_id` int(11) NOT NULL,
+  `grams` decimal(15,2) NOT NULL,
+  `euro` decimal(15,2) NOT NULL,
+  `realGrams` decimal(15,2) NOT NULL,
+  `grams2` decimal(15,2) NOT NULL,
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE `saveDispense_summary` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `gramsTOT` decimal(15,2) NOT NULL,
+  `realgramsTOT` decimal(15,2) NOT NULL,
+  `unitsTOT` decimal(15,2) NOT NULL,
+  `credit` decimal(15,2) NOT NULL,
+  `newcredit` decimal(15,2) NOT NULL,
+  `eurcalcTOT` decimal(15,2) NOT NULL,
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+ALTER TABLE `card_purchase` ADD `operatorid` INT(11) NOT NULL AFTER `userid`;
+
+ALTER TABLE `customers` ADD `member_contract` TEXT NOT NULL AFTER `contract`;
+ALTER TABLE `customers` ADD `logo_path` VARCHAR(50) NOT NULL AFTER `member_contract`;
+ALTER TABLE `customers` ADD `club_status` INT(11) NOT NULL AFTER `logo_path`;
+ALTER TABLE `usergroup_discounts` ADD `b_discount_price` decimal(15,2) NOT NULL AFTER `discount_percentage`;
+ALTER TABLE `usergroup_discounts` ADD `b_discount_percentage` decimal(15,2) NOT NULL AFTER `b_discount_price`;

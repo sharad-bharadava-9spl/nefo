@@ -1,0 +1,20 @@
+// 2-05-2020 updates 
+ // admin_nefos db chnages
+ALTER TABLE `feedback` ADD `file_names` VARCHAR(500) NULL DEFAULT NULL AFTER `message`;
+ALTER TABLE `help_videos` ADD `video_status` INT(11) NULL DEFAULT NULL COMMENT ' \'1\' is New\' 0\' is None' AFTER `video_duration`;
+
+
+// 5-05-2020 updates 
+ // admin_nefos db chnages
+
+CREATE TABLE `feedback_attachments` (
+ `id` int(11) NOT NULL AUTO_INCREMENT,
+ `feedback_id` int(11) DEFAULT NULL,
+ `file_name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+ `uploaded_on` datetime DEFAULT NULL,
+ `status` enum('1','0') COLLATE utf8_unicode_ci NOT NULL DEFAULT '1',
+ PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+ALTER TABLE feedback
+DROP COLUMN file_names;
